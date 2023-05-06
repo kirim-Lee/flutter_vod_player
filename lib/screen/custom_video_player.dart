@@ -5,6 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:vod_player/components/custom_icon_button.dart';
 
+const second3 = Duration(seconds: 3);
+
 class CustomVideoPlayer extends StatefulWidget{
   final XFile video;
 
@@ -62,9 +64,9 @@ class _CustomVideoPlayer extends State<CustomVideoPlayer> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                CustomIconButton(onPressed: () {}, iconData: Icons.rotate_left),
-                CustomIconButton(onPressed: (){}, iconData: videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow),
-                CustomIconButton(onPressed: (){}, iconData: Icons.rotate_right),
+                CustomIconButton(onPressed: onReversePressed, iconData: Icons.rotate_left),
+                CustomIconButton(onPressed: onPlayPressed, iconData: videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow),
+                CustomIconButton(onPressed: onForwardPressed, iconData: Icons.rotate_right),
               ],
             )
           )
@@ -80,8 +82,55 @@ class _CustomVideoPlayer extends State<CustomVideoPlayer> {
 
     await videoController.initialize();
 
+    videoController.addListener(videoControllerListener);
+
     setState(() {
       this.videoController = videoController;
     });
   }
+
+  void videoControllerListener() {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    videoController!.removeListener(videoControllerListener);
+    super.dispose();
+  }
+
+  void onReversePressed () {
+    final currentPosition = videoController!.value.position;
+
+    Duration position = const Duration();
+
+    if(currentPosition.inSeconds > 3) { // 3초보다 길때만
+      position = currentPosition - second3;
+    }
+
+    videoController!.seekTo(position);
+  }
+
+  void onForwardPressed () {
+    final maxPosition = videoController!.value.duration;
+    final currentPosition = videoController!.value.position;
+
+    Duration position = maxPosition;
+
+    if ((maxPosition - second3).inSeconds > currentPosition.inSeconds ) {
+      position = currentPosition + second3;
+    }
+
+    videoController!.seekTo(position);
+  }
+
+  void onPlayPressed () {
+    if (videoController!.value.isPlaying) {
+      videoController!.pause();
+    } else {
+      videoController!.play();
+    }
+  }
+
+
 }
