@@ -66,13 +66,28 @@ class _CustomVideoPlayer extends State<CustomVideoPlayer> {
               bottom:0,
               right:0,
               left:0,
-              child: Slider(
-                  onChanged: (double val) {
-                    videoController!.seekTo(Duration(seconds: val.toInt()));
-                  },
-                  value: videoController!.value.position.inSeconds.toDouble(),
-                  min: 0,
-                  max: videoController!.value.duration.inSeconds.toDouble()
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  children: [
+                    renderTimetextFromDuration(
+                      videoController!.value.position
+                    ),
+                    Expanded(
+                      child: Slider(
+                          onChanged: (double val) {
+                            videoController!.seekTo(Duration(seconds: val.toInt()));
+                          },
+                          value: videoController!.value.position.inSeconds.toDouble(),
+                          min: 0,
+                          max: videoController!.value.duration.inSeconds.toDouble()
+                      )
+                    ),
+                    renderTimetextFromDuration(
+                        videoController!.value.duration
+                    ),
+                  ],
+                ),
               ),
             ),
             if (showControls)
@@ -157,4 +172,11 @@ class _CustomVideoPlayer extends State<CustomVideoPlayer> {
       videoController!.play();
     }
   }
+}
+
+Widget renderTimetextFromDuration(Duration duration) {
+  return Text(
+    '${duration.inMinutes.toString().padLeft(2, '0')}:${(duration.inSeconds % 60).toString().padLeft(2,'0')}',
+    style: const TextStyle(color:Colors.white),
+  );
 }
