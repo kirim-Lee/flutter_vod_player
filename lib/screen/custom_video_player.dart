@@ -9,8 +9,13 @@ const second3 = Duration(seconds: 3);
 
 class CustomVideoPlayer extends StatefulWidget{
   final XFile video;
+  final GestureTapCallback onNewVideoPressed;
 
-  const CustomVideoPlayer({required this.video, Key? key}): super(key: key);
+  const CustomVideoPlayer({
+    required this.video,
+    required this.onNewVideoPressed,
+    Key? key
+  }): super(key: key);
 
   @override
   State<CustomVideoPlayer> createState() => _CustomVideoPlayer();
@@ -24,6 +29,15 @@ class _CustomVideoPlayer extends State<CustomVideoPlayer> {
     super.initState();
 
     initializeController(); // 컨트롤러 초기화
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomVideoPlayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.video.path != widget.video.path) {
+      initializeController();
+    }
   }
 
   @override
@@ -55,7 +69,7 @@ class _CustomVideoPlayer extends State<CustomVideoPlayer> {
           Align(
             alignment: Alignment.topRight,
             child: CustomIconButton(
-              onPressed: (){},
+              onPressed: widget.onNewVideoPressed,
               iconData: Icons.photo_camera_back,
             ),
           ),
@@ -131,6 +145,4 @@ class _CustomVideoPlayer extends State<CustomVideoPlayer> {
       videoController!.play();
     }
   }
-
-
 }
